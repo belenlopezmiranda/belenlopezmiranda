@@ -44,6 +44,56 @@
 	<script src="js/respond.min.js"></script>
 	<![endif]-->
 
+	<script>
+		// Espera a que todo el DOM cargue
+		document.addEventListener("DOMContentLoaded", function () {
+			const menuLinks = document.querySelectorAll("#colorlib-main-menu ul li a");
+			const sections = document.querySelectorAll("section[id]"); // Secciones con ID
+
+			// Función para quitar la clase activa de todos los enlaces
+			function removeActiveClasses() {
+				menuLinks.forEach(link => {
+					link.parentElement.classList.remove("colorlib-active");
+				});
+			}
+
+			// Al hacer click en un enlace del menú
+			menuLinks.forEach(link => {
+				link.addEventListener("click", function () {
+					removeActiveClasses();
+					if (this.hash) { // Solo se resalta si es una ancla interna
+						const target = document.querySelector(this.hash);
+						if (target) {
+							this.parentElement.classList.add("colorlib-active");
+						}
+					} else {
+						this.parentElement.classList.add("colorlib-active");
+					}
+				});
+			});
+
+			// Usamos Intersection Observer para detectar la sección visible
+			const observer = new IntersectionObserver(entries => {
+				entries.forEach(entry => {
+					if (entry.isIntersecting) {
+						const id = entry.target.getAttribute("id");
+						const activeLink = document.querySelector(`#colorlib-main-menu ul li a[href="#${id}"]`);
+						if (activeLink) {
+							removeActiveClasses();
+							activeLink.parentElement.classList.add("colorlib-active");
+						}
+					}
+				});
+			}, {
+				rootMargin: "-50% 0px -50% 0px", // activa cuando el centro de la sección está en pantalla
+				threshold: 0
+			});
+
+			// Observa cada sección con ID
+			sections.forEach(section => observer.observe(section));
+		});
+	</script>
+
 </head>
 
 <body>
